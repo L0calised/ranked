@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check app.js && node --check contest.js && node --check src/local-session.js && node --check src/codeforces.js && node --check src/recommendations.js && node --check src/history.js && node --check src/history-store.js && node --check src/virtual-results.js && node --check src/results-view.js && node --check src/session-library.js && node --check src/storage.js && node --check src/custom-contest.js && node --check src/problem-exclusions.js && node --check excluded.js && node --check history-page.js && node --check src/rating-history.js && node --check src/history-timeline.js && node --check src/skill-rating.js && node --check src/skill-service.js && node --check src/benchmark-store.js && node --check src/standings-data.js && node --check api/standings.js",
+    "check": "node --check app.js && node --check contest.js && node --check src/local-session.js && node --check src/codeforces.js && node --check src/recommendations.js && node --check src/history.js && node --check src/history-store.js && node --check src/virtual-results.js && node --check src/results-view.js && node --check src/session-library.js && node --check src/storage.js && node --check src/custom-contest.js && node --check src/problem-exclusions.js && node --check excluded.js && node --check history-page.js && node --check src/rating-history.js && node --check src/history-timeline.js && node --check src/skill-rating.js && node --check src/skill-service.js && node --check src/benchmark-store.js && node --check src/catalogue-store.js && node --check src/standings-data.js && node --check api/standings.js",
     "test": "node --test"
   }
 }

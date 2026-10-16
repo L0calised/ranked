@@ -10,6 +10,7 @@ import { syncRoundResults } from './src/virtual-results.js?v=2';
 import { SKILL_WINDOW_MS, calculateSkill } from './src/skill-rating.js?v=7';
 import { computeSkill, loadSkill, skillSignature, loadBenchmark, officialBaseline } from './src/skill-service.js?v=8';
 import { renderVirtualResults } from './src/results-view.js?v=5';
+import { loadProblemset, loadContestList } from './src/catalogue-store.js?v=1';
 
 const $ = (selector) => document.querySelector(selector);
 const storage = createBrowserStorage();
@@ -194,9 +195,12 @@ async function importRound(contestId) {
   setBusy(true); status('Loading the original round and problem lineup…');
   try {
     if (!catalogue) {
-      const problemset = await codeforcesRequest('problemset.problems');
-      const contests = await codeforcesRequest('contest.list');
-      catalogue = { problems: problemset.problems || [], contests: contests || [] };
+      const [problems, contests] = await Promise.all([
+        loadProblemset(() => codeforcesRequest('problemset.problems')),
+        loadContestList(() => codeforcesRequest('contest.list')),
+      ]);
+      catalogue = { problems, contests };
+      recentContests = contests;
     }
     const contest = catalogue.contests.find((entry) => entry.id === contestId);
     const problems = catalogue.problems.filter((problem) => problem.contestId === contestId);
@@ -264,7 +268,7 @@ async function calculateRanked() {
     // Round metadata determines whether a recent submission's full contest
     // window can end inside the lookback. Old archives stay available separately.
     if (discovered.length) {
-      const contests = catalogue?.contests || recentContests || (recentContests = await codeforcesRequest('contest.list'));
+      const contests = catalogue?.contests || recentContests || (recentContests = await loadContestList(() => codeforcesRequest('contest.list')));
       for (const round of discovered) {
         const contest = contests.find((entry) => entry.id === round.contestId);
         if (!contest) {

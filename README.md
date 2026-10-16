@@ -19,6 +19,7 @@ Open http://localhost:4173. No dependency installation or API keys are needed. S
 
 1. Connect your public Codeforces handle.
 2. Up to three suitable full rounds appear automatically after connecting. Choose one, or choose **Create custom contest**. Switching between the offered rounds needs no extra API calls. Find more contests refreshes history and offers another batch.
+   Each problem's Codeforces mashup ID (for example, `1119A`) is clickable to copy. For custom sets, the ID uses the problem's original contest and index.
 3. For a full round, start native virtual participation on Codeforces. Alternatively, schedule a local practice timer on Ranked. Custom sets use the same local timer and original CF problem links.
 4. Return to **History → Refresh history**. Native virtual results since your latest official contest are imported automatically. Local/custom sessions open on their own contest page to sync submissions and review results.
 
@@ -35,6 +36,7 @@ Earlier practice does not block a native virtual from affecting the estimate. On
 ## Storage and efficiency
 
 - Account submission history is paginated fully once and then refreshed incrementally in IndexedDB, so earlier attempts remain available for familiarity checks. Transactional saves protect complete history from partial or older writes in another tab.
+- The large public problem catalogue is cached in IndexedDB for 24 hours and the contest list for 15 minutes. Dashboard and History share these caches, with concurrent tabs coordinating cache misses so repeat visits avoid downloading the catalogues again. The first visit still fetches them from Codeforces.
 - Original contest fields are cached for 24 hours in a bounded IndexedDB cache. Completed virtual result snapshots can be reused for 15 minutes; per-round Refresh forces fresh verdicts.
 - Only native virtuals in the current official-contest period are automatically assessed. Official contests are reset points; the app no longer downloads their whole rated fields or maintains a second lifetime rating.
 - Sessions, preferences, and calculated reports stay on this browser/device. No login or cross-device database is required. Browser records are not trusted competitive evidence.

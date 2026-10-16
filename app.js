@@ -12,6 +12,7 @@ import { createRatingHistoryStore, normalizeRatingHistory } from './src/rating-h
 import { loadSkill, officialBaseline } from './src/skill-service.js?v=8';
 import { createBrowserStorage } from './src/storage.js';
 import { createProblemExclusions, exclusionStorageKey, findExcludedProblem } from './src/problem-exclusions.js?v=2';
+import { loadProblemset, loadContestList } from './src/catalogue-store.js?v=1';
 
 const form = document.querySelector('#handle-form');
 const input = document.querySelector('#handle');
@@ -135,6 +136,8 @@ choicesContainer.addEventListener('click', (event) => {
 recommendationResult.addEventListener('click', (event) => {
   if (event.target.closest('[data-start-session]')) startSession();
   if (event.target.closest('[data-sync-results]')) importRoundResults();
+  const copyCodeButton = event.target.closest('[data-copy-problem-code]');
+  if (copyCodeButton) copyProblemCode(copyCodeButton.dataset.copyProblemCode);
   const excludeButton = event.target.closest('[data-exclude-problem]');
   if (excludeButton && selectedRound && connectedProfile && !findingContest && !syncingResults && !hasActiveSession()) {
     const problem = selectedRound.problems.find((entry) => problemKey(entry) === excludeButton.dataset.excludeProblem);
@@ -265,9 +268,11 @@ function rememberRecommendation(round) {
 
 async function ensureCatalogue() {
   if (!catalogue) {
-    const problemset = await codeforcesRequest('problemset.problems');
-    const contests = await codeforcesRequest('contest.list');
-    catalogue = { problems: problemset.problems || [], contests: contests || [] };
+    const [problems, contests] = await Promise.all([
+      loadProblemset(() => codeforcesRequest('problemset.problems')),
+      loadContestList(() => codeforcesRequest('contest.list')),
+    ]);
+    catalogue = { problems, contests };
   }
   return catalogue;
 }
@@ -423,13 +428,20 @@ function renderRecommendation(contest, problems) {
     link.textContent = problem.name ? `${label}. ${problem.name}` : `Problem ${label}`;
     const status = document.createElement('span');
     status.dataset.problemStatus = '';
-    status.textContent = hasRecordedAttempt(problem) ? 'Attempt in your history' : custom ? `CF ${problem.contestId}${problem.index}` : '';
+    status.textContent = hasRecordedAttempt(problem) ? 'Attempt in your history' : '';
+    const codeText = `${problem.contestId}${problem.index}`;
+    const code = document.createElement('button');
+    code.type = 'button';
+    code.className = 'problem-code';
+    code.dataset.copyProblemCode = codeText;
+    code.textContent = codeText;
+    code.setAttribute('aria-label', `Copy Codeforces problem code ${codeText}`);
     const controls = document.createElement('div');
     controls.className = 'problem-controls';
     const exclude = document.createElement('button');
     exclude.type = 'button'; exclude.className = 'secondary-button problem-exclusion-button';
     exclude.dataset.excludeProblem = problemKey(problem); exclude.textContent = 'Exclude';
-    controls.append(status, exclude);
+    controls.append(status, code, exclude);
     row.append(link, controls);
     list.append(row);
   });
@@ -470,6 +482,30 @@ function renderRecommendation(contest, problems) {
   card.append(top, list, note, actions, exclusionNote);
   recommendationResult.append(card);
   updateSessionActions();
+}
+
+async function copyProblemCode(code) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(code);
+    } else {
+      const field = document.createElement('textarea');
+      field.value = code;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand('copy');
+      field.remove();
+      if (!copied) throw new Error('Clipboard access is unavailable.');
+    }
+    resultsStatus.classList.remove('error');
+    resultsStatus.textContent = `Copied ${code}. Paste it into the Codeforces Mashup problem field.`;
+  } catch {
+    resultsStatus.textContent = `Could not copy ${code}. You can select the problem code shown beside its name.`;
+    resultsStatus.classList.add('error');
+  }
 }
 
 async function fetchAndSaveRound(round, onProgress) {
