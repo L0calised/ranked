@@ -82,10 +82,10 @@ test('at least 25 established opponents remain necessary for performance', () =>
   const data = benchmark(); data.rows = data.rows.slice(0, 24);
   assert.throws(() => estimatePerformance(data, { points: 1, penalty: 25 }, 'Example'), /25 opponents/);
 });
-test('familiarity, pending verdicts and incomplete history do not become rated evidence', () => {
+test('prior practice is allowed, while pending verdicts and incomplete history require review', () => {
   const snapshot = round(); const session = snapshot.sessions[0]; const data = benchmark();
   assert.match(virtualEligibility({ ...snapshot, historyComplete: false }, session, data, start + 2 * 86400000), /complete submission history/);
-  assert.match(virtualEligibility(snapshot, { ...session, priorAttemptProblems: 1 }, data, start + 2 * 86400000), /Earlier attempts/);
+  assert.equal(virtualEligibility(snapshot, { ...session, priorAttemptProblems: 1, repeatedExposure: true }, data, start + 2 * 86400000), null);
   assert.match(virtualEligibility(snapshot, { ...session, pending: 1 }, data, start + 2 * 86400000), /pending/);
 });
 test('both ten- and twenty-minute ICPC penalties are detected from official samples', () => {

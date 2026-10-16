@@ -17,7 +17,7 @@ export function buildHistoryTimeline({ official = [], rounds = [], localSessions
       id: session.id, kind: 'virtual', contestId: round.contestId, name: round.contestName,
       date: session.startedAt * 1000, dateLabel: 'Virtual start', status: session.status === 'in-progress' ? 'In progress at last sync' : 'Window ended',
       result: `${session.solved}/${session.problems.length} accepted`, sessionId: session.id,
-      syncedAt: round.syncedAt, needsReview: Boolean(session.pending || session.provisionalAccepted || session.priorAttemptProblems || session.outsideWindowCount || session.unknownProblemCount),
+      syncedAt: round.syncedAt, needsReview: Boolean(session.pending || session.provisionalAccepted || session.outsideWindowCount || session.unknownProblemCount),
     });
   }
   for (const session of localSessions) {

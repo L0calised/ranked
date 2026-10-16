@@ -1,4 +1,4 @@
-# VC estimate (model v5)
+# VC estimate (model v6)
 
 ## Period and reset
 
@@ -16,7 +16,7 @@ Invert mean Elo expected wins against the matched field to produce approximate p
 
 Replay eligible virtuals in time order from the official baseline. Baseline model SD is 200; virtual observation SD is `350/sqrt(coverage)`, increased at field boundaries. Prior variance grows by 12² per day, and posterior SD has a 100-point floor. More uncertainty reduces changes in either direction. The optional displayed range is mean minus two model SDs through mean; it is not a validated confidence interval. With zero eligible virtuals the displayed VC estimate is exactly the official baseline and no range is shown.
 
-Familiar/related problems, repeated sessions, pending or provisional judging, missing original lineup, or contradictory identity/timing are excluded with an explanation. A user stopping early does not automatically discard a native virtual once its original full window ends. Sessions with no public submissions may not be observable. Reading an editorial or receiving assistance without recorded submissions cannot be detected.
+Earlier practice on the round or related problem versions does not block the native virtual. Only solves and attempts within that virtual’s original time window enter its score; earlier solves do not count automatically. Repeated virtual sessions, pending or provisional judging, missing original lineup, or contradictory identity/timing are excluded with an explanation. A user stopping early does not automatically discard a native virtual once its original full window ends. Sessions with no public submissions may not be observable. Reading an editorial or receiving assistance without recorded submissions cannot be detected.
 
 ## Integration and storage
 

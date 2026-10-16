@@ -1,4 +1,4 @@
-export const SKILL_VERSION = 5;
+export const SKILL_VERSION = 6;
 export const SKILL_DAYS = 14;
 export const SKILL_WINDOW_MS = SKILL_DAYS * 86400000;
 const finite = Number.isFinite;
@@ -92,7 +92,6 @@ export function virtualEligibility(snapshot, session, data, now = Date.now()) {
   if (!snapshot.historyComplete) return 'Refresh and import with complete submission history first.';
   if (session.pending || session.provisionalAccepted) return 'Judging or final-test confirmation is pending.';
   if (session.startEvidence !== 'reported') return 'A Codeforces-reported start time is required.';
-  if (session.priorAttemptProblems || session.repeatedExposure) return 'Earlier attempts or a related problem version were found.';
   if (session.unknownProblemCount || snapshot.ignored.identity || snapshot.ignored.timing || snapshot.ignored.malformed) return 'Submission identity, timing, or lineup needs review.';
   const keys = session.problems.map((p) => p.index).sort().join(',');
   if (keys !== data.problems.map((p) => p.index).sort().join(',')) return 'The saved lineup does not match the official lineup.';

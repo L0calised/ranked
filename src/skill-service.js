@@ -1,6 +1,6 @@
 import { codeforcesRequest, codeforcesStandings } from './codeforces.js?v=3';
 import { createBenchmarkStore } from './benchmark-store.js';
-import { validateBenchmark, virtualEligibility, scoreVirtual, estimatePerformance, calculateSkill, SKILL_VERSION, SKILL_WINDOW_MS } from './skill-rating.js?v=6';
+import { validateBenchmark, virtualEligibility, scoreVirtual, estimatePerformance, calculateSkill, SKILL_VERSION, SKILL_WINDOW_MS } from './skill-rating.js?v=7';
 const fields = createBenchmarkStore();
 const keyFor = (handle) => `ranked-skill-${handle.toLowerCase()}`;
 

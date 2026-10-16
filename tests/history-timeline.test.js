@@ -56,7 +56,7 @@ test('zero-solve synced results differ from results never synced; provisional da
   const rows = buildHistoryTimeline({ localSessions: [local(), local({ id: 'synced', results: { solved: 0, pending: 1, syncedAt: 100 } })], rounds: [round([virtual({ priorAttemptProblems: 1 })])] });
   assert.equal(rows.find((row) => row.sessionId === 'synced').result, '0/3 accepted');
   assert.equal(rows.find((row) => row.sessionId === 'local-1').result, 'Not synced');
-  assert.equal(rows.find((row) => row.kind === 'virtual').needsReview, true);
+  assert.equal(rows.find((row) => row.kind === 'virtual').needsReview, false);
   assert.equal(rows.find((row) => row.sessionId === 'synced').needsReview, true);
 });
 test('filters and search compose and match names, types, IDs and status', () => {

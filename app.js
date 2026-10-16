@@ -4,12 +4,12 @@ import { generateCustomContest } from './src/custom-contest.js?v=6';
 import { syncSubmissionHistory } from './src/history.js?v=3';
 import { createHistoryStore } from './src/history-store.js?v=2';
 import { syncRoundResults } from './src/virtual-results.js?v=2';
-import { renderVirtualResults } from './src/results-view.js?v=4';
+import { renderVirtualResults } from './src/results-view.js?v=5';
 import { createSessionLibrary } from './src/session-library.js?v=2';
 import { createLocalSessionStore, prepareLocalSession } from './src/local-session.js?v=12';
-import { calculateSkill } from './src/skill-rating.js?v=6';
+import { calculateSkill } from './src/skill-rating.js?v=7';
 import { createRatingHistoryStore, normalizeRatingHistory } from './src/rating-history.js';
-import { loadSkill, officialBaseline } from './src/skill-service.js?v=7';
+import { loadSkill, officialBaseline } from './src/skill-service.js?v=8';
 import { createBrowserStorage } from './src/storage.js';
 import { createProblemExclusions, exclusionStorageKey, findExcludedProblem } from './src/problem-exclusions.js?v=2';
 

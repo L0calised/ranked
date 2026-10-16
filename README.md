@@ -30,7 +30,7 @@ Official CF rating is displayed unchanged. The VC estimate starts at the latest 
 
 Performance compares the timed coding result with available original rated opponents. ICPC-style wrong-answer penalties are detected from official samples; CF point conventions are validated before use. Partial opponent coverage gives a less certain result with less influence on the VC estimate; missing opponents are not assigned fabricated scores. The value is approximate, not an official rating prediction or official virtual rank. The optional range beside it is a cautious-to-main estimate, not a validated confidence interval.
 
-Repeated/familiar problems, pending verdicts, contradictory timing, and unusable scoring evidence do not affect the estimate. All observable solves remain reviewable. Local timers and custom sets show practice results; no calibrated rating is invented for a mixed set without an original shared field.
+Earlier practice does not block a native virtual from affecting the estimate. Only submissions made during its original virtual window count; earlier solves are not carried into the score. Repeated virtual sessions, pending verdicts, contradictory timing, and unusable scoring evidence are excluded. All observable solves remain reviewable. Local timers and custom sets show practice results; no calibrated rating is invented for a mixed set without an original shared field.
 
 ## Storage and efficiency
 

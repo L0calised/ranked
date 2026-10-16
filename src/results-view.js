@@ -32,7 +32,7 @@ export function renderVirtualResults(container, snapshot, { sessionId = null } =
     summary.textContent = `${date(session.startedAt)} · ${session.solved}/${session.problems.length} accepted · ${session.attempts} submissions · ${session.status === 'in-progress' ? 'In progress at last sync' : 'Time ended'}`;
     const evidence = document.createElement('p');
     evidence.className = 'result-caveat';
-    evidence.textContent = `${session.startEvidence === 'reported' ? 'Start reported by Codeforces.' : 'Start reconstructed wholly or partly from virtual submission times.'} ${session.pending} judging; ${session.provisionalAccepted} accepted submissions without confirmed final tests. ${session.priorAttemptProblems} problems with earlier recorded attempts.`;
+    evidence.textContent = `${session.startEvidence === 'reported' ? 'Start reported by Codeforces.' : 'Start reconstructed wholly or partly from virtual submission times.'} ${session.pending} judging; ${session.provisionalAccepted} accepted submissions without confirmed final tests. ${session.priorAttemptProblems} problems with earlier recorded attempts; earlier practice does not block the VC estimate.`;
     const table = document.createElement('table');
     const caption = document.createElement('caption');
     caption.textContent = 'Submissions within the original contest duration';

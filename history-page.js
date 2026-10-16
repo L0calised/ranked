@@ -3,13 +3,13 @@ import { syncSubmissionHistory } from './src/history.js?v=3';
 import { createHistoryStore } from './src/history-store.js?v=2';
 import { createBrowserStorage } from './src/storage.js';
 import { createRatingHistoryStore, normalizeRatingHistory } from './src/rating-history.js';
-import { buildHistoryTimeline, filterHistory, historyTypes } from './src/history-timeline.js';
+import { buildHistoryTimeline, filterHistory, historyTypes } from './src/history-timeline.js?v=2';
 import { createSessionLibrary, discoverVirtualRounds } from './src/session-library.js?v=2';
 import { createLocalSessionStore } from './src/local-session.js?v=12';
 import { syncRoundResults } from './src/virtual-results.js?v=2';
-import { SKILL_WINDOW_MS, calculateSkill } from './src/skill-rating.js?v=6';
-import { computeSkill, loadSkill, skillSignature, loadBenchmark, officialBaseline } from './src/skill-service.js?v=7';
-import { renderVirtualResults } from './src/results-view.js?v=4';
+import { SKILL_WINDOW_MS, calculateSkill } from './src/skill-rating.js?v=7';
+import { computeSkill, loadSkill, skillSignature, loadBenchmark, officialBaseline } from './src/skill-service.js?v=8';
+import { renderVirtualResults } from './src/results-view.js?v=5';
 
 const $ = (selector) => document.querySelector(selector);
 const storage = createBrowserStorage();

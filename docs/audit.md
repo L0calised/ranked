@@ -61,3 +61,7 @@ All personal data is stored in the current browser/device. Clearing site storage
 VC performance is an approximate comparison with available original opponents, not an official virtual rank or validated forecast. Missing/contradictory timing, familiarity, pending verdicts, and unsupported scoring are explained rather than assigned fabricated performance. The displayed range is cautious-to-main, not a statistical confidence interval.
 
 The browser tests reproduce contest flows with fixtures; they do not replace playing a real contest over its full duration. Vercel deployment, production concurrency, and future API availability were not validated in this review. This version is suitable for the agreed personal-use scope.
+
+## Follow-up — native virtuals allow earlier practice
+
+Per the requested simpler personal-use rule, previous practice or related-version attempts no longer disqualify a native virtual. Its score still uses only submissions inside that virtual's original window. Earlier accepted submissions are not imported as timed solves. Recommendations continue to prefer untouched rounds. Earlier-practice metadata remains available in result details, but no longer adds a Needs review flag by itself. Derived report version 6 forces recalculation under this rule without deleting saved history.
