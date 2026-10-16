@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f5f6" />
+    <meta name="description" content="Practice Codeforces contests on your schedule." />
+    <title>Ranked — Practice on your schedule</title>
+    <link rel="stylesheet" href="/styles.css?v=16" />
+    <script src="/app.js?v=25" type="module"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Ranked home">
+        <span class="brand-mark" aria-hidden="true">r</span>
+        <span>ranked<span class="brand-dot">.</span></span>
+      </a>
+      <nav class="topbar-note" aria-label="Main navigation"><a id="history-link" href="/history.html">History</a><a id="excluded-problems-link" href="/excluded.html">Excluded problems</a><span>Early preview</span></nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">YOUR NEXT CONTEST, WHENEVER YOU ARE</p>
+          <h1>Get better at<br /><span>your own pace.</span></h1>
+          <p class="intro">A focused place to practice Codeforces contests, track your sessions, and see your progress over time.</p>
+
+          <form id="handle-form" class="handle-form">
+            <label for="handle">Your Codeforces handle</label>
+            <div class="input-row">
+              <div class="input-wrap">
+                <span class="at-sign" aria-hidden="true">@</span>
+                <input id="handle" name="handle" type="text" placeholder="e.g. tourist" autocomplete="off" maxlength="24" required />
+              </div>
+              <button type="submit" id="connect-button">Connect handle <span aria-hidden="true">→</span></button>
+            </div>
+            <p class="form-hint" id="form-hint" role="status">Uses public Codeforces profile and submission data. No password needed.</p>
+          </form>
+        </div>
+
+        <aside class="preview-card" aria-label="Codeforces profile and recent submissions">
+          <div class="preview-topline"><span>YOUR PRACTICE SPACE</span><span class="preview-icon">↗</span></div>
+          <div class="rating-block">
+            <span class="muted-label">OFFICIAL CODEFORCES RATING</span>
+            <div class="rating-value" id="official-rating">— <span>connect a handle</span></div>
+            <div class="rating-scale"><span id="cf-rank">Public profile data</span><span id="max-rating">Max —</span></div>
+          </div>
+          <div class="ranked-preview"><span class="muted-label">VC ESTIMATE · UNOFFICIAL</span><strong id="dashboard-skill">—</strong><span id="dashboard-skill-range" class="skill-range" title="Cautious-to-main estimate range; not a validated confidence interval." hidden></span><span id="dashboard-skill-note">Resets after each official rated contest.</span></div>
+          <div class="preview-divider"></div>
+          <div class="profile-heading">
+            <div><span class="muted-label">RECENT SUBMISSIONS</span><strong id="profile-name">Waiting for a Codeforces handle</strong></div>
+            <a id="profile-link" class="profile-link" href="https://codeforces.com" target="_blank" rel="noreferrer">Codeforces ↗</a>
+          </div>
+          <ul class="submission-list" id="submission-list"><li class="empty-submissions">Connect a handle to load public activity.</li></ul>
+          <div class="preview-footer"><span class="footer-check">✓</span> Solve on Codeforces. Track progress here.</div>
+        </aside>
+      </section>
+
+      <section class="recommendation-section" id="recommendation-section" aria-labelledby="recommendation-title" hidden>
+        <div class="recommendation-heading">
+          <div><p class="eyebrow">YOUR NEXT CONTEST</p><h2 id="recommendation-title">Find your next contest</h2></div>
+          <div class="recommendation-actions">
+            <button type="button" id="recommend-button" disabled>Find a contest <span aria-hidden="true">→</span></button>
+            <button type="button" id="custom-contest-button" class="secondary-button" disabled>Create custom contest</button>
+          </div>
+        </div>
+        <p class="recommendation-note" id="recommendation-note" role="status">Connect your handle to sync its public submission history before finding a round.</p>
+        <div class="session-panel" id="session-panel" hidden></div>
+        <div id="round-choices" class="round-choices" role="group" aria-label="Suggested virtual contests" hidden></div>
+        <div class="recommendation-result" id="recommendation-result" aria-live="polite"></div>
+        <p class="recommendation-note" id="results-status" role="status"></p>
+        <div class="round-results" id="round-results" hidden></div>
+      </section>
+
+      <section class="how-it-works" aria-labelledby="how-title">
+        <div class="section-heading"><p class="eyebrow">SIMPLE BY DESIGN</p><h2 id="how-title">Practice. Compete. Improve.</h2></div>
+        <div class="steps">
+          <article class="step"><span class="step-number">01</span><div><h3>Connect your handle</h3><p>We’ll use your public Codeforces history to find problems that fit you.</p></div></article>
+          <article class="step"><span class="step-number">02</span><div><h3>Start a contest</h3><p>Play a full round on Codeforces, or schedule a generated set here and submit on Codeforces.</p></div></article>
+          <article class="step"><span class="step-number">03</span><div><h3>Come back afterward</h3><p>Sync your virtual results to review solves, attempts, and solve times.</p></div></article>
+        </div>
+      </section>
+      <p class="disclaimer">Ranked is an independent practice project. It is not affiliated with Codeforces; VC estimates are unofficial.</p>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

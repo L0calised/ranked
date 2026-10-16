@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f5f6" />
+    <title>Excluded problems — Ranked</title>
+    <link rel="stylesheet" href="/styles.css?v=16" />
+    <script src="/excluded.js?v=3" type="module"></script>
+  </head>
+  <body>
+    <header class="topbar"><a class="brand" href="/">ranked<span class="brand-dot">.</span></a><nav class="topbar-note" aria-label="Main navigation"><a href="/">Dashboard</a><a id="history-link" href="/history.html">History</a></nav></header>
+    <main class="excluded-page">
+      <p class="eyebrow">YOUR PRACTICE PREFERENCES</p>
+      <h1>Excluded problems</h1>
+      <p>Problems you chose to leave out of recommendations. Restore them individually or all at once.</p>
+      <form id="excluded-handle-form" class="handle-form">
+        <label for="excluded-handle">Codeforces handle</label>
+        <div class="input-row"><div class="input-wrap"><span class="at-sign" aria-hidden="true">@</span><input id="excluded-handle" maxlength="24" required autocomplete="off" /></div><button type="submit">Show problems</button></div>
+      </form>
+      <p id="excluded-status" class="form-hint" role="status"></p>
+      <p class="recommendation-note">Saved on this device for each handle. Restoring a problem removes your manual exclusion; earlier submissions, played sessions, and related exclusions still apply.</p>
+      <div class="exclusion-toolbar"><label for="excluded-search">Filter problems <input type="search" id="excluded-search" placeholder="Problem name or source" /></label><button id="restore-all" class="secondary-button" type="button" disabled>Restore all</button></div>
+      <p id="excluded-summary" class="recommendation-note"></p>
+      <ul id="excluded-list" class="library-list"></ul>
+    </main>
+  </body>
+</html>

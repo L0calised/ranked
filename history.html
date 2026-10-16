@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f5f6" />
+    <title>Contest history — Ranked</title>
+    <link rel="stylesheet" href="/styles.css?v=16" />
+    <script src="/history-page.js?v=9" type="module"></script>
+  </head>
+  <body class="history-layout">
+    <header class="topbar">
+      <a class="brand" href="/">ranked<span class="brand-dot">.</span></a>
+      <nav class="topbar-note" aria-label="Main navigation"><a href="/">Dashboard</a><a href="/history.html" aria-current="page">History</a><a id="history-exclusions" href="/excluded.html">Excluded problems</a></nav>
+    </header>
+    <main class="history-page">
+      <p class="eyebrow">YOUR CONTEST ARCHIVE</p>
+      <h1>Contest history</h1>
+      <p>Official rated contests, Codeforces virtuals, and practice sessions in one place.</p>
+      <form id="history-handle-form" class="handle-form">
+        <label for="history-handle">Codeforces handle</label>
+        <div class="input-row"><div class="input-wrap"><span class="at-sign" aria-hidden="true">@</span><input id="history-handle" maxlength="24" required autocomplete="off" /></div><button type="submit" id="history-refresh">Refresh history</button></div>
+      </form>
+      <p id="history-status" class="form-hint" role="status"></p>
+      <section class="skill-panel" aria-labelledby="skill-title">
+        <h2 id="skill-title">Your ratings</h2>
+        <div class="skill-values"><div>Official CF rating<strong id="skill-official">—</strong></div><div>VC estimate · unofficial<div class="skill-rating-line"><strong id="skill-estimate">—</strong><span id="skill-range" class="skill-range" title="Cautious-to-main estimate range; not a validated confidence interval." hidden></span></div></div></div>
+        <p id="skill-note" class="recommendation-note">Starts from your latest official CF rating.</p>
+        <p id="skill-status" class="form-hint" role="status"></p>
+        <p class="result-caveat">Your VC estimate starts at your latest official CF rating and resets after each official rated contest. Full Codeforces virtuals update it; custom sets and the local timer show practice results. Estimates are approximate.</p>
+      </section>
+
+      <p id="history-sync-note" class="recommendation-note"></p>
+      <div class="history-toolbar">
+        <label for="history-type">Contest type<select id="history-type"><option value="all">All types</option><option value="official">Official rated</option><option value="virtual">CF virtual</option><option value="local">Local round</option><option value="custom">Custom set</option></select></label>
+        <label for="history-search">Search<input id="history-search" type="search" placeholder="Contest name or ID" /></label>
+      </div>
+      <p id="history-summary" class="recommendation-note" aria-live="polite"></p>
+      <div class="history-table-wrap" role="region" aria-label="Contest history table" tabindex="0">
+        <table class="history-table">
+          <caption>Newest first. Official dates are rating-update dates; session dates are start times. All times use your local timezone.</caption>
+          <thead><tr><th scope="col">Date</th><th scope="col">Contest</th><th scope="col">Type</th><th scope="col">Result / status</th><th scope="col">Contest rank</th><th scope="col">CF Δ</th><th scope="col">CF new rating</th><th scope="col">Performance</th><th scope="col">VC Δ</th><th scope="col">VC estimate</th><th scope="col">Actions</th></tr></thead>
+          <tbody id="history-rows"></tbody>
+        </table>
+      </div>
+      <p class="recommendation-note">Results are saved on this device. Refresh history after competing on Codeforces; sessions without submissions may not be detectable.</p>
+      <section id="history-details" hidden aria-label="Virtual session details">
+        <button id="history-close-details" class="secondary-button" type="button">Close results</button>
+        <div id="history-results" class="round-results" hidden></div>
+      </section>
+    </main>
+  </body>
+</html>
