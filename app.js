@@ -7,9 +7,9 @@ import { syncRoundResults } from './src/virtual-results.js?v=2';
 import { renderVirtualResults } from './src/results-view.js?v=5';
 import { createSessionLibrary } from './src/session-library.js?v=2';
 import { createLocalSessionStore, prepareLocalSession } from './src/local-session.js?v=12';
-import { calculateSkill } from './src/skill-rating.js?v=7';
+import { calculateSkill } from './src/skill-rating.js?v=8';
 import { createRatingHistoryStore, normalizeRatingHistory } from './src/rating-history.js';
-import { loadSkill, officialBaseline } from './src/skill-service.js?v=8';
+import { computeSkill, loadSkill, officialBaseline } from './src/skill-service.js?v=10';
 import { createBrowserStorage } from './src/storage.js';
 import { createProblemExclusions, exclusionStorageKey, findExcludedProblem } from './src/problem-exclusions.js?v=2';
 import { loadProblemset, loadContestList } from './src/catalogue-store.js?v=1';
@@ -28,6 +28,7 @@ const recommendationSection = document.querySelector('#recommendation-section');
 const recommendButton = document.querySelector('#recommend-button');
 const customButton = document.querySelector('#custom-contest-button');
 const historyLink = document.querySelector('#history-link');
+const dashboardHistoryLink = document.querySelector('#dashboard-history-link');
 const exclusionsLink = document.querySelector('#excluded-problems-link');
 const recommendationNote = document.querySelector('#recommendation-note');
 const choicesContainer = document.querySelector('#round-choices');
@@ -75,8 +76,8 @@ function updateSessionActions() {
     action.disabled = action.matches('[data-sync-results], [data-start-session]') ? busy : blocked;
   });
   const startButton = recommendationResult.querySelector('[data-start-session]');
-  if (startButton) startButton.textContent = scheduled ? 'View scheduled start' : hasActiveSession() ? 'Resume contest'
-    : selectedRound?.contest.kind === 'custom' ? 'Prepare custom contest' : 'Start on Ranked';
+  if (startButton) startButton.textContent = scheduled ? 'View scheduled start' : hasActiveSession() ? 'Resume practice'
+    : selectedRound?.contest.kind === 'custom' ? 'Prepare custom practice' : 'Practice on Ranked';
   const excluded = connectedProfile ? exclusions.list(connectedProfile.handle) : [];
   let hasExcludedProblems = false;
   recommendationResult.querySelectorAll('[data-problem-key]').forEach((row) => {
@@ -136,8 +137,8 @@ choicesContainer.addEventListener('click', (event) => {
 recommendationResult.addEventListener('click', (event) => {
   if (event.target.closest('[data-start-session]')) startSession();
   if (event.target.closest('[data-sync-results]')) importRoundResults();
-  const copyCodeButton = event.target.closest('[data-copy-problem-code]');
-  if (copyCodeButton) copyProblemCode(copyCodeButton.dataset.copyProblemCode);
+  const problemId = event.target.closest('[data-copy-problem-id]');
+  if (problemId) copyProblemId(problemId.dataset.copyProblemId);
   const excludeButton = event.target.closest('[data-exclude-problem]');
   if (excludeButton && selectedRound && connectedProfile && !findingContest && !syncingResults && !hasActiveSession()) {
     const problem = selectedRound.problems.find((entry) => problemKey(entry) === excludeButton.dataset.excludeProblem);
@@ -189,6 +190,7 @@ async function loadCodeforcesProfile(handle) {
   localSession = null;
   exclusionsLink.href = '/excluded.html';
   historyLink.href = `/history.html?handle=${encodeURIComponent(handle)}`;
+  dashboardHistoryLink.href = historyLink.href;
   recommendButton.disabled = true;
   customButton.disabled = true;
   setLoading(true);
@@ -429,19 +431,17 @@ function renderRecommendation(contest, problems) {
     const status = document.createElement('span');
     status.dataset.problemStatus = '';
     status.textContent = hasRecordedAttempt(problem) ? 'Attempt in your history' : '';
-    const codeText = `${problem.contestId}${problem.index}`;
-    const code = document.createElement('button');
-    code.type = 'button';
-    code.className = 'problem-code';
-    code.dataset.copyProblemCode = codeText;
-    code.textContent = codeText;
-    code.setAttribute('aria-label', `Copy Codeforces problem code ${codeText}`);
+    const id = `${problem.contestId}${problem.index}`;
+    const copyId = document.createElement('button');
+    copyId.type = 'button'; copyId.className = 'problem-code';
+    copyId.dataset.copyProblemId = id; copyId.textContent = id;
+    copyId.setAttribute('aria-label', `Copy Codeforces problem ID ${id}`);
     const controls = document.createElement('div');
     controls.className = 'problem-controls';
     const exclude = document.createElement('button');
     exclude.type = 'button'; exclude.className = 'secondary-button problem-exclusion-button';
     exclude.dataset.excludeProblem = problemKey(problem); exclude.textContent = 'Exclude';
-    controls.append(status, code, exclude);
+    controls.append(status, copyId, exclude);
     row.append(link, controls);
     list.append(row);
   });
@@ -450,7 +450,7 @@ function renderRecommendation(contest, problems) {
   note.className = 'result-caveat';
   note.textContent = custom
     ? 'Five problems from different rounds, ordered by difficulty. Tags and difficulty ratings are hidden. Schedule this contest here, then solve and submit through the original Codeforces problem links. Practice results only.'
-    : 'Full round, original duration. Tags and difficulty ratings are hidden. Start virtual participation on Codeforces, or prepare timed practice here and submit on Codeforces. Opening either option does not start the timer.';
+    : 'Full round, original duration. Tags and difficulty ratings are hidden. Start virtual participation on Codeforces to include the result in your VC estimate. Ranked timed practice is tracked separately.';
   const actions = document.createElement('div');
   actions.className = 'contest-actions';
   const roundLink = document.createElement('a');
@@ -469,7 +469,7 @@ function renderRecommendation(contest, problems) {
   startButton.className = 'secondary-button';
   startButton.dataset.startSession = '';
   startButton.disabled = false;
-  startButton.textContent = hasActiveSession() ? 'Resume contest' : custom ? 'Prepare custom contest' : 'Start on Ranked';
+  startButton.textContent = hasActiveSession() ? 'Resume practice' : custom ? 'Prepare custom practice' : 'Practice on Ranked';
   if (custom) actions.append(startButton);
   else {
     actions.append(roundLink, startButton, syncButton);
@@ -478,32 +478,27 @@ function renderRecommendation(contest, problems) {
   exclusionNote.className = 'result-caveat';
   exclusionNote.textContent = custom
     ? 'Exclude individual problems you recognize. Create custom contest generates a complete replacement set. Review or restore exclusions on the Excluded problems page.'
-    : 'Find more contests offers another batch for this visit. Excluding a problem rules out this full round as untouched; its other problems remain available for custom sets.';
+    : 'Find more contests offers another batch for this visit. Excluding a problem rules out this full round as untouched; its other problems remain available for custom practice.';
   card.append(top, list, note, actions, exclusionNote);
   recommendationResult.append(card);
   updateSessionActions();
 }
 
-async function copyProblemCode(code) {
+async function copyProblemId(id) {
   try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(code);
-    } else {
+    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(id);
+    else {
       const field = document.createElement('textarea');
-      field.value = code;
-      field.setAttribute('readonly', '');
-      field.style.position = 'fixed';
-      field.style.opacity = '0';
-      document.body.append(field);
-      field.select();
-      const copied = document.execCommand('copy');
-      field.remove();
+      field.value = id; field.setAttribute('readonly', '');
+      field.style.position = 'fixed'; field.style.opacity = '0';
+      document.body.append(field); field.select();
+      const copied = document.execCommand('copy'); field.remove();
       if (!copied) throw new Error('Clipboard access is unavailable.');
     }
     resultsStatus.classList.remove('error');
-    resultsStatus.textContent = `Copied ${code}. Paste it into the Codeforces Mashup problem field.`;
+    resultsStatus.textContent = `Copied problem ID ${id}.`;
   } catch {
-    resultsStatus.textContent = `Could not copy ${code}. You can select the problem code shown beside its name.`;
+    resultsStatus.textContent = `Could not copy ${id}. You can select the ID beside its name.`;
     resultsStatus.classList.add('error');
   }
 }
@@ -545,6 +540,28 @@ async function importRoundResults() {
       resultsStatus.textContent = `Syncing round results: ${count.toLocaleString()} submissions across ${pages} pages…`;
     });
     resultsStatus.textContent = importSummary(snapshot, saved);
+    if (saved && connectedProfile) {
+      const handle = connectedProfile.handle;
+      const official = officialRatings.load(handle)?.records || [];
+      const baseline = officialBaseline(official);
+      const completedSinceBaseline = sessionLibrary.listRounds(handle).some((round) => round.sessions.some((session) =>
+        session.status === 'ended' && session.endsAt * 1000 <= Date.now()
+        && (!baseline || session.startedAt * 1000 > baseline.date)));
+      if (completedSinceBaseline) {
+        resultsStatus.textContent += ' Updating VC estimate…';
+        try {
+          const report = await computeSkill({
+            handle, official, rounds: sessionLibrary.listRounds(handle), storage,
+          });
+          renderSkillPreview(handle, connectedProfile.rating);
+          resultsStatus.textContent = `${importSummary(snapshot, saved)} VC estimate ${report.skill.rating == null ? 'has no eligible results yet' : `updated to ${report.skill.rating}`}.`;
+        } catch (error) {
+          // Result syncing succeeded. Keep that success visible if benchmark
+          // data needed for the optional estimate is temporarily unavailable.
+          resultsStatus.textContent = `${importSummary(snapshot, saved)} The VC estimate could not update: ${error.message}`;
+        }
+      }
+    }
   } catch (error) {
     resultsStatus.classList.add('error');
     resultsStatus.textContent = `Could not sync results. ${error.message}${resultsContainer.hidden ? '' : ' Last-synced results below may be out of date.'}`;
@@ -620,7 +637,9 @@ function renderSkillPreview(handle, officialRating = connectedProfile?.rating) {
   document.querySelector('#dashboard-skill').textContent = summary.rating ?? officialRating ?? '—';
   document.querySelector('#dashboard-skill-range').hidden = !summary.count;
   document.querySelector('#dashboard-skill-range').textContent = summary.count ? `(${summary.conservative}–${summary.rating})` : '';
-  document.querySelector('#dashboard-skill-note').textContent = summary.count ? `${summary.count} virtuals since your latest official contest. Update in History.` : 'Starts at your official CF rating. Update results in History.';
+  document.querySelector('#dashboard-skill-note').textContent = summary.count
+    ? `${summary.count} virtual${summary.count === 1 ? '' : 's'} since latest rated contest`
+    : 'Based on official rating until a virtual is calculated';
 }
 
 function renderProfile(user, submissions) {

@@ -54,6 +54,11 @@ test('a full virtual after the reset is counted automatically', async () => {
   const result = await computeSkill({ handle: 'Example', official, rounds: [round()], storage: storage(), now: start + 2 * 86400000, benchmark: async () => benchmark() });
   assert.equal(result.skill.count, 1); assert.equal(result.analyses[0].counted, true);
 });
+test('Ranked local practice results cannot change the Codeforces virtual estimate', () => {
+  const local = { id: 'local:one', kind: 'local', startedAt: start + 1000, date: start + 7201000, performance: 2400 };
+  const result = calculateSkill([local], start + 9000000, baseline);
+  assert.equal(result.rating, baseline.rating); assert.equal(result.count, 0);
+});
 test('a virtual that started before the main contest reset cannot leak into the new VC period', async () => {
   const result = await computeSkill({ handle: 'Example', official, rounds: [round(start - 1000000)], storage: storage(), now: start + 2 * 86400000,
     benchmark: () => { throw new Error('Pre-reset virtual must not download a field'); } });

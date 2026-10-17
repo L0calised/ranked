@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f4f5f6" />
     <title>Contest — Ranked</title>
-    <link rel="stylesheet" href="/styles.css?v=18" />
+    <link rel="stylesheet" href="/styles.css?v=20" />
     <script src="/contest.js?v=16" type="module"></script>
   </head>
   <body>
@@ -16,21 +16,21 @@
       <p class="recommendation-note" id="contest-meta"></p>
       <p id="contest-error" class="form-hint error" role="alert" hidden></p>
       <section class="contest-result-card" id="contest-prestart" hidden>
-        <h2>Choose a virtual start time</h2>
-        <p>Pick when you want to begin, like Codeforces virtual participation. We’ll check earlier submissions now, then show a countdown to your start time.</p>
+        <h2>Schedule practice</h2>
+        <p>Choose a start time. We’ll check earlier submissions now, then show a countdown.</p>
         <p>At that time, the contest timer begins and the problems appear. Submit on Codeforces in practice mode.</p>
         <p class="recommendation-note">This is browser-timed practice and does not change a Codeforces rating.</p>
         <p class="recommendation-note" id="prestart-familiarity"></p>
         <div class="schedule-control">
-          <label for="contest-start-time">Virtual start time</label>
+          <label for="contest-start-time">Practice start time</label>
           <div class="schedule-input-row"><input id="contest-start-time" type="datetime-local" required /><span id="local-timezone"></span></div>
           <small>Suggested start: the next five-minute mark. You can change it.</small>
         </div>
-        <button id="start-contest" type="button">Schedule virtual start</button>
+        <button id="start-contest" type="button">Schedule practice</button>
         <p id="start-status" class="recommendation-note" role="status"></p>
       </section>
       <section class="contest-result-card scheduled-panel" id="contest-scheduled" hidden>
-        <p class="eyebrow">VIRTUAL START COUNTDOWN</p>
+        <p class="eyebrow">PRACTICE START COUNTDOWN</p>
         <h2 id="scheduled-start-label"></h2>
         <p class="session-timer scheduled-clock" id="scheduled-clock" aria-label="Time until contest starts"></p>
         <p class="recommendation-note">At zero, the contest timer starts. This start time is saved in your browser.</p>

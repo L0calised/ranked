@@ -7,8 +7,8 @@ import { buildHistoryTimeline, filterHistory, historyTypes } from './src/history
 import { createSessionLibrary, discoverVirtualRounds } from './src/session-library.js?v=2';
 import { createLocalSessionStore } from './src/local-session.js?v=12';
 import { syncRoundResults } from './src/virtual-results.js?v=2';
-import { SKILL_WINDOW_MS, calculateSkill } from './src/skill-rating.js?v=7';
-import { computeSkill, loadSkill, skillSignature, loadBenchmark, officialBaseline } from './src/skill-service.js?v=8';
+import { SKILL_WINDOW_MS, calculateSkill } from './src/skill-rating.js?v=8';
+import { computeSkill, loadSkill, skillSignature, loadBenchmark, officialBaseline } from './src/skill-service.js?v=9';
 import { renderVirtualResults } from './src/results-view.js?v=5';
 import { loadProblemset, loadContestList } from './src/catalogue-store.js?v=1';
 
@@ -118,7 +118,7 @@ function render() {
       const eligibility = document.createElement('small');
       eligibility.textContent = analysis ? analysis.counted ? update ? 'Counts toward VC estimate' : 'Before the latest official contest' : analysis.reason : row.date <= (baseline?.date ?? Date.now() - SKILL_WINDOW_MS) ? 'Before the current VC period' : row.discovery ? 'Sync to analyze' : 'Not calculated';
       name.append(eligibility);
-    } else performance.title = 'Practice result: open the session for solves, attempts, and solve times.';
+    } else performance.title = 'Local practice record. Ranked timed sessions do not change the VC estimate.';
     tr.append(date, name, cell(historyTypes[row.kind]), result, cell(row.rank ?? '—'), delta, cell(row.newRating ?? '—'), performance, rankedDelta, rankedRating, actions);
     body.append(tr);
   }
@@ -204,7 +204,7 @@ async function importRound(contestId) {
     }
     const contest = catalogue.contests.find((entry) => entry.id === contestId);
     const problems = catalogue.problems.filter((problem) => problem.contestId === contestId);
-    if (!contest || !problems.length) throw new Error('This round is unavailable in the public regular-contest catalog. Private mashups and gyms need separate access support.');
+    if (!contest || !problems.length) throw new Error('This contest is not in the public Codeforces round catalog.');
     const result = await syncRoundResults({ handle, contest, problems, request: codeforcesRequest, historySubmissions: submissions, historyComplete: history?.complete === true,
       onProgress: ({ count }) => status(`Importing fresh results: ${count} public submissions checked…`),
     });
@@ -255,8 +255,8 @@ function renderSkill(rounds) {
   $('#skill-range').hidden = !summary.count;
   $('#skill-range').textContent = summary.count ? `(${summary.conservative}–${summary.rating})` : '';
   $('#skill-note').textContent = baseline
-    ? `${summary.count} eligible virtuals since ${baseline.contestName || 'your latest official contest'}. ${summary.count ? `Started at ${baseline.rating}.` : `VC estimate reset to ${baseline.rating}.`}${skillReport && !reportCurrent ? ' Refresh history to update.' : ''}`
-    : `${summary.count || 0} recent eligible virtuals. ${summary.count ? 'Provisional estimate until your first official rated contest.' : 'Play a contest, then refresh history to see your results.'}`;
+    ? `${summary.count} eligible Codeforces virtuals since ${baseline.contestName || 'your latest official contest'}. ${summary.count ? `Started at ${baseline.rating}.` : `VC estimate reset to ${baseline.rating}.`}${skillReport && !reportCurrent ? ' Refresh history to update.' : ''}`
+    : `${summary.count || 0} recent eligible Codeforces virtuals. ${summary.count ? 'Provisional estimate until your first official rated contest.' : 'Complete a virtual contest, then refresh history to see your results.'}`;
   return { analyses: new Map((skillReport?.analyses || []).map((entry) => [entry.id, entry])), skillEntries: new Map(summary.entries.map((entry) => [entry.id, entry])) };
 }
 async function calculateRanked() {
@@ -272,7 +272,7 @@ async function calculateRanked() {
       for (const round of discovered) {
         const contest = contests.find((entry) => entry.id === round.contestId);
         if (!contest) {
-          if (round.lastSubmissionAt * 1000 >= cutoff) unavailableRounds.push({ contestId: round.contestId, reason: 'Public full-round metadata is unavailable; private mashups and gyms are not rated here.' });
+          if (round.lastSubmissionAt * 1000 >= cutoff) unavailableRounds.push({ contestId: round.contestId, reason: 'Public full-round metadata is unavailable; only regular Codeforces rounds are included.' });
           continue;
         }
         if ((round.lastSubmissionAt + contest.durationSeconds) * 1000 < cutoff) continue;
@@ -299,7 +299,7 @@ async function calculateRanked() {
     skillReport = await computeSkill({ handle, official: ratings.records, rounds, unavailableRounds, storage,
       onProgress: ({ index, total, contestId }) => { $('#skill-status').textContent = `Calculating ${index}/${total}: contest ${contestId}…`; },
     });
-    $('#skill-status').textContent = `Results updated. ${skillReport.analyses.filter((entry) => entry.counted).length} virtuals counted since the latest official contest.`;
+    $('#skill-status').textContent = `Results updated. ${skillReport.analyses.filter((entry) => entry.counted).length} Codeforces virtuals counted since the latest official contest.`;
     $('#skill-status').classList.remove('error'); render();
   } catch (error) {
     $('#skill-status').textContent = error.code === 'STANDINGS_PROXY_UNAVAILABLE'

@@ -1,4 +1,4 @@
-export const SKILL_VERSION = 6;
+export const SKILL_VERSION = 8;
 export const SKILL_DAYS = 14;
 export const SKILL_WINDOW_MS = SKILL_DAYS * 86400000;
 const finite = Number.isFinite;
